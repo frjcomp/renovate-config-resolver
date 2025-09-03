@@ -57,7 +57,6 @@ describe("Renovate Resolver Service", () => {
       extends: ["github>nice-move/renovate-config"],
     };
     const res = await request(app).post("/resolve").send(githubConfig);
-    console.log(res.body);
     expect(res.statusCode).toBe(200);
     expect(JSON.stringify(res.body)).not.toContain("extends");
     expect(JSON.stringify(res.body)).toContain("nice-move packages");
