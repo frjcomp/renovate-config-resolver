@@ -16,6 +16,6 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
-      - name: Deploy to Vercel
+      - name: Deploy Docker container to Vercel
         run: |
-          vercel deploy --prod --token "${{ secrets.VERCEL_TOKEN }}" --org "${{ secrets.VERCEL_ORG_ID }}" --project "${{ secrets.VERCEL_PROJECT_ID }}" --confirm
+          vercel deploy --prod --token "${{ secrets.VERCEL_TOKEN }}" --org "${{ secrets.VERCEL_ORG_ID }}" --project "${{ secrets.VERCEL_PROJECT_ID }}" --confirm --prebuilt
