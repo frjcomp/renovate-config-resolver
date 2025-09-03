@@ -115,7 +115,8 @@ export default async function startServer() {
   });
 
   app.post("/resolve", validateRequestBody, async (req, res) => {
-    logger.info({ body: req.body }, "Received /resolve request");
+    logger.info("/resolve endpoint called");
+    logger.debug({ body: req.body }, "Received /resolve request");
     try {
       const resolvedConfig = await resolveConfigPresets(req.body);
       res.json(resolvedConfig);
