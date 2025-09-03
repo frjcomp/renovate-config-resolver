@@ -1,8 +1,20 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/frjcomp/renovate-config-resolver/test.yml)
+![Docker Pulls](https://img.shields.io/docker/pulls/jfrcomp/renovate-config-resolver.svg)
+
 
 # Renovate Config Resolver
 
 A microservice that exposes an HTTP endpoint to resolve and expand Renovate configuration presets, returning the fully merged configuration.
+
+Run it locally using Docker
+
+```bash
+docker run -p 3000:3000 jfrcomp/renovate-config-resolver:latest
+```
+
+Demo environment: https://juicy-marleen-frjcomp-ec77f95d.koyeb.app/resolve
+
+
 
 ## API Endpoints
 
@@ -49,7 +61,7 @@ curl -X POST http://localhost:3000/resolve \
 1. **Clone the repository:**
 
    ```sh
-   git clone <your-repo-url>
+   git clone git@github.com:frjcomp/renovate-config-resolver.git
    cd renovate-config-resolver
    ```
 
@@ -76,19 +88,9 @@ curl -X POST http://localhost:3000/resolve \
 
 Tests are written using [Vitest](https://vitest.dev/).
 
-- **Run all tests:**
-  ```sh
-  npx vitest run
-  ```
-  Or, if you have a test script in your `package.json`:
-  ```sh
-  npm test
-  ```
-
-## Continuous Integration
-
-Tests are automatically run on every push and pull request to the `main` branch using GitHub Actions.  
-See [`.github/workflows/test.yml`](.github/workflows/test.yml) for details.
+```sh
+npx vitest run
+```
 
 ## Useful Links
 
