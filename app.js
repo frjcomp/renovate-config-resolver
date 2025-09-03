@@ -25,12 +25,18 @@ export default async function startServer() {
   let renovateSchema;
   try {
     logger.info("Fetching Renovate schema...");
-    const res = await fetch("https://docs.renovatebot.com/renovate-schema.json");
-    if (!res.ok) throw new Error(`Failed to fetch Renovate schema: ${res.statusText}`);
+    const res = await fetch(
+      "https://docs.renovatebot.com/renovate-schema.json",
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch Renovate schema: ${res.statusText}`);
     renovateSchema = await res.json();
     logger.info("Renovate schema downloaded successfully");
   } catch (err) {
-    logger.error({ err }, "Could not download Renovate schema. Server will not start.");
+    logger.error(
+      { err },
+      "Could not download Renovate schema. Server will not start.",
+    );
     process.exit(1);
   }
 
@@ -44,7 +50,10 @@ export default async function startServer() {
   const validateRequestBody = (req, res, next) => {
     const valid = validateRenovate(req.body);
     if (!valid) {
-      return res.status(400).json({ error: "Invalid Renovate config", details: validateRenovate.errors });
+      return res.status(400).json({
+        error: "Invalid Renovate config",
+        details: validateRenovate.errors,
+      });
     }
     next();
   };
@@ -68,7 +77,10 @@ export default async function startServer() {
               description: "Service is healthy",
               content: {
                 "application/json": {
-                  schema: { type: "object", properties: { status: { type: "string" } } },
+                  schema: {
+                    type: "object",
+                    properties: { status: { type: "string" } },
+                  },
                 },
               },
             },
@@ -122,7 +134,9 @@ export default async function startServer() {
       res.json(resolvedConfig);
     } catch (error) {
       logger.error({ error }, "Error resolving Renovate config");
-      res.status(500).json({ error: error?.message || "Internal Server Error" });
+      res
+        .status(500)
+        .json({ error: error?.message || "Internal Server Error" });
     }
   });
 
@@ -132,6 +146,7 @@ export default async function startServer() {
   app.use((err, req, res, next) => {
     logger.error({ err }, "Unhandled error");
     res.status(500).json({ error: "Internal Server Error" });
+    next();
   });
 
   const PORT = process.env.PORT || 3000;

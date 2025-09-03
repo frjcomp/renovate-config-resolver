@@ -2,8 +2,8 @@ name: Build and Push Docker image
 
 on:
   push:
-    branches: ["main"]   # Runs only when pushing to main branch
-  workflow_dispatch:     # Allow manual runs
+    branches: ["main"] # Runs only when pushing to main branch
+    workflow_dispatch: # Allow manual runs
 
 jobs:
   build-and-push:

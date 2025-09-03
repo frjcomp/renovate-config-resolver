@@ -1,7 +1,6 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/frjcomp/renovate-config-resolver/test.yml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/jfrcomp/renovate-config-resolver.svg)
 
-
 # Renovate Config Resolver
 
 A microservice that exposes an HTTP endpoint to resolve and expand Renovate configuration presets, returning the fully merged configuration.
@@ -12,16 +11,19 @@ Run it locally using Dockercqq
 docker run -p 3000:3000 jfrcomp/renovate-config-resolver:latest
 ```
 
-
 Demo environment: https://juicy-marleen-frjcomp-ec77f95d.koyeb.app/resolve
 
 ```bash
 curl -X POST https://juicy-marleen-frjcomp-ec77f95d.koyeb.app/resolve   -H "Content-Type: application/json"   -d '{"extends":["config:base"]}'
 ```
 
-
-
 ## API Endpoints
+
+### Swagger UI
+
+The service exposes an interactive Swagger UI to explore and test the API endpoints.
+
+URL: http://localhost:3000/api-docs
 
 ### `GET /health`
 
