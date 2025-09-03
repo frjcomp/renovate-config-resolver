@@ -9,6 +9,8 @@ RUN npm ci
 COPY app.js ./
 COPY server.js ./
 
+RUN test -f renovate-schema.json || (echo "renovate-schema.json missing" && exit 1)
+
 EXPOSE 3000
 
 CMD ["node", "server.js"]
