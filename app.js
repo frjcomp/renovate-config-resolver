@@ -5,7 +5,7 @@ import pino from "pino";
 import swaggerUi from "swagger-ui-express";
 import AjvDraft04 from "ajv-draft-04";
 import addFormats from "ajv-formats";
-import fetch from "node-fetch"; // Node 18+ has global fetch
+import fetch from "node-fetch";
 
 const logger = pino({
   level: process.env.LOG_LEVEL || "info",
@@ -122,6 +122,10 @@ export default async function startServer() {
   // -----------------------
   // Routes
   // -----------------------
+  app.get("/", (req, res) => {
+    res.redirect("/api-docs/");
+  });
+
   app.get("/health", (req, res) => {
     logger.info("Health check requested");
     res.json({ status: "ok" });
