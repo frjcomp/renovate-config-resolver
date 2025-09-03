@@ -1,5 +1,6 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/frjcomp/renovate-config-resolver/test.yml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/jfrcomp/renovate-config-resolver.svg)
+[![Docker Image Version](https://img.shields.io/docker/v/jfrcomp/renovate-config-resolver/latest)](https://hub.docker.com/r/jfrcomp/renovate-config-resolver)
 
 # Renovate Config Resolver
 
