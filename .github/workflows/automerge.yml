@@ -1,0 +1,20 @@
+name: Automerge Dependabot
+
+on:
+  pull_request:
+    types: [opened, labeled, synchronize]
+    branches:
+      - main
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pascalgn/automerge-action@v0.15.4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          merge-method: squash
+          commit-message: "title+body"
+          label: automerge
+          author: dependabot[bot]
