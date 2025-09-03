@@ -6,13 +6,18 @@
 
 A microservice that exposes an HTTP endpoint to resolve and expand Renovate configuration presets, returning the fully merged configuration.
 
-Run it locally using Docker
+Run it locally using Dockercqq
 
 ```bash
 docker run -p 3000:3000 jfrcomp/renovate-config-resolver:latest
 ```
 
+
 Demo environment: https://juicy-marleen-frjcomp-ec77f95d.koyeb.app/resolve
+
+```bash
+curl -X POST https://juicy-marleen-frjcomp-ec77f95d.koyeb.app/resolve   -H "Content-Type: application/json"   -d '{"extends":["config:base"]}'
+```
 
 
 
