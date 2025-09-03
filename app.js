@@ -1,11 +1,14 @@
-// app.js
+import fs from "fs";
+import path from "path";
 import express from "express";
 import { resolveConfigPresets } from "renovate/dist/config/presets/index.js";
 import pino from "pino";
 import swaggerUi from "swagger-ui-express";
 import AjvDraft04 from "ajv-draft-04";
 import addFormats from "ajv-formats";
-import renovateSchema from "./renovate-schema.json" assert { type: "json" };
+
+const schemaPath = path.resolve("./renovate-schema.json");
+const renovateSchema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
 
 const logger = pino({
   level: process.env.LOG_LEVEL || "info",
@@ -25,7 +28,9 @@ export default async function startServer() {
   // Check if Renovate schema is defined
   // -----------------------
   if (!renovateSchema || Object.keys(renovateSchema).length === 0) {
-    logger.error("Renovate schema is not defined or empty. Server will not start.");
+    logger.error(
+      "Renovate schema is not defined or empty. Server will not start.",
+    );
     process.exit(1);
   } else {
     logger.info("Renovate schema loaded successfully");
@@ -69,7 +74,10 @@ export default async function startServer() {
               description: "Service is healthy",
               content: {
                 "application/json": {
-                  schema: { type: "object", properties: { status: { type: "string" } } },
+                  schema: {
+                    type: "object",
+                    properties: { status: { type: "string" } },
+                  },
                 },
               },
             },
@@ -113,7 +121,9 @@ export default async function startServer() {
       res.json(resolvedConfig);
     } catch (error) {
       logger.error({ error }, "Error resolving Renovate config");
-      res.status(500).json({ error: error?.message || "Internal Server Error" });
+      res
+        .status(500)
+        .json({ error: error?.message || "Internal Server Error" });
     }
   });
 

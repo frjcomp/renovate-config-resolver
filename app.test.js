@@ -48,7 +48,9 @@ describe("Renovate Resolver Service", () => {
     expect(Array.isArray(res.body.details)).toBe(true);
 
     const messages = res.body.details.map((e) => e.message).join(" ");
-    expect(messages).toContain("must be array must be string must match exactly one schema in oneOf");
+    expect(messages).toContain(
+      "must be array must be string must match exactly one schema in oneOf",
+    );
   });
 
   it("should resolve a simple Renovate config", async () => {
@@ -85,7 +87,9 @@ describe("Renovate Resolver Service", () => {
       .send(gitlabConfig);
     expect(res.statusCode).toBe(200);
     expect(JSON.stringify(res.body)).not.toContain("extends");
-    expect(JSON.stringify(res.body)).toContain("registry.gitlab.com/team-supercharge/oasg");
+    expect(JSON.stringify(res.body)).toContain(
+      "registry.gitlab.com/team-supercharge/oasg",
+    );
   });
 
   it("should resolve GitHub hosted configs", async () => {
