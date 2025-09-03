@@ -1,11 +1,14 @@
-// app.js
+import fs from "fs";
+import path from "path";
 import express from "express";
 import { resolveConfigPresets } from "renovate/dist/config/presets/index.js";
 import pino from "pino";
 import swaggerUi from "swagger-ui-express";
 import AjvDraft04 from "ajv-draft-04";
 import addFormats from "ajv-formats";
-import fetch from "node-fetch";
+
+const schemaPath = path.resolve("./renovate-schema.json");
+const renovateSchema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
 
 const logger = pino({
   level: process.env.LOG_LEVEL || "info",
@@ -17,37 +20,34 @@ const logger = pino({
 
 export default async function startServer() {
   const app = express();
-  app.use(express.json());
+
+  // Limit request body to prevent OOM
+  app.use(express.json({ limit: "5mb" }));
 
   // -----------------------
-  // Download Renovate JSON Schema
+  // Check if Renovate schema is defined
   // -----------------------
-  let renovateSchema;
-  try {
-    logger.info("Fetching Renovate schema...");
-    const res = await fetch(
-      "https://docs.renovatebot.com/renovate-schema.json",
-    );
-    if (!res.ok)
-      throw new Error(`Failed to fetch Renovate schema: ${res.statusText}`);
-    renovateSchema = await res.json();
-    logger.info("Renovate schema downloaded successfully");
-  } catch (err) {
+  if (!renovateSchema || Object.keys(renovateSchema).length === 0) {
     logger.error(
-      { err },
-      "Could not download Renovate schema. Server will not start.",
+      "Renovate schema is not defined or empty. Server will not start.",
     );
     process.exit(1);
+  } else {
+    logger.info("Renovate schema loaded successfully");
   }
 
   // -----------------------
-  // AJV Draft-04 Validator
+  // AJV Draft-04 Validator (lazy compilation)
   // -----------------------
   const ajv = new AjvDraft04({ strict: false });
   addFormats(ajv);
-  const validateRenovate = ajv.compile(renovateSchema);
+  let validateRenovate;
 
   const validateRequestBody = (req, res, next) => {
+    if (!validateRenovate) {
+      validateRenovate = ajv.compile(renovateSchema);
+      logger.info("Renovate validator compiled lazily");
+    }
     const valid = validateRenovate(req.body);
     if (!valid) {
       return res.status(400).json({
@@ -58,9 +58,6 @@ export default async function startServer() {
     next();
   };
 
-  // -----------------------
-  // OpenAPI JSON with Renovate schema embedded for Swagger UI
-  // -----------------------
   const swaggerSpec = {
     openapi: "3.0.3",
     info: {
@@ -92,17 +89,10 @@ export default async function startServer() {
           summary: "Resolve a Renovate config",
           requestBody: {
             required: true,
-            content: {
-              "application/json": {
-                schema: renovateSchema, // Embed the full Renovate JSON Schema here
-              },
-            },
+            content: { "application/json": { schema: renovateSchema } },
           },
           responses: {
-            200: {
-              description: "Resolved config",
-              content: { "application/json": { schema: { type: "object" } } },
-            },
+            200: { description: "Resolved config" },
             400: { description: "Invalid Renovate config" },
             500: { description: "Internal server error" },
           },
@@ -111,20 +101,13 @@ export default async function startServer() {
     },
   };
 
-  // -----------------------
-  // Serve Swagger UI
-  // -----------------------
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-  // Serve OpenAPI JSON
   app.get("/api-docs.json", (req, res) => res.json(swaggerSpec));
 
   // -----------------------
   // Routes
   // -----------------------
-  app.get("/", (req, res) => {
-    res.redirect("/api-docs/");
-  });
+  app.get("/", (req, res) => res.redirect("/api-docs/"));
 
   app.get("/health", (req, res) => {
     logger.info("Health check requested");
