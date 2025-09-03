@@ -14,8 +14,12 @@
   "license": "GNU",
   "type": "module",
   "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-draft-04": "^1.0.0",
     "body-parser": "^2.2.0",
     "express": "^5.1.0",
+    "express-jsdoc-swagger": "^1.8.0",
+    "express-openapi-validator": "^5.5.8",
     "pino": "^9.9.0",
     "pino-pretty": "^13.1.1",
     "prettier": "^3.6.2",
