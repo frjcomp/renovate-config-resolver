@@ -11,4 +11,4 @@ COPY server.js ./
 
 EXPOSE 3000
 
-CMD ["node", "api/index.js"]
+CMD ["node", "server.js"]
