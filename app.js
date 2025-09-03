@@ -1,29 +1,30 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import { resolveConfigPresets } from 'renovate/dist/config/presets/index.js';
+import express from "express";
+import bodyParser from "body-parser";
+import { resolveConfigPresets } from "renovate/dist/config/presets/index.js";
 
 export default async function startServer() {
   const app = express();
   app.use(bodyParser.json());
 
   // Health check endpoint
-  app.get('/health', (req, res) => {
-    res.json({ status: 'ok' });
+  app.get("/health", (req, res) => {
+    res.json({ status: "ok" });
   });
 
   // POST /resolve endpoint
-  app.post('/resolve', async (req, res) => {
+  app.post("/resolve", async (req, res) => {
     const configObj = req.body;
     if (!configObj) {
-      return res.status(400).json({ error: 'Missing Renovate config in request body' });
+      return res
+        .status(400)
+        .json({ error: "Missing Renovate config in request body" });
     }
 
     try {
       const resolvedConfig = await resolveConfigPresets(configObj);
-      res.json({ resolvedConfig });
+      res.json(resolvedConfig);
     } catch (error) {
-      console.error('Error resolving Renovate config:', error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error || "Internal Server Error" });
     }
   });
 

@@ -1,6 +1,6 @@
 export default {
   test: {
-    environment: 'node',
+    environment: "node",
     globals: true,
   },
 };
