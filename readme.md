@@ -18,6 +18,8 @@ Demo environment: https://juicy-marleen-frjcomp-ec77f95d.koyeb.app/resolve
 curl -X POST https://juicy-marleen-frjcomp-ec77f95d.koyeb.app/resolve   -H "Content-Type: application/json"   -d '{"extends":["config:base"]}'
 ```
 
+> ⚠️ **Note:** This web service **cannot resolve local `extends` presets** (e.g., `local>ci/renovate.json`)
+
 ## API Endpoints
 
 ### Swagger UI
@@ -108,3 +110,4 @@ npx vitest run
 Todo:
 
 - document local caveats
+- add support for config for custom gitlab instance token and url

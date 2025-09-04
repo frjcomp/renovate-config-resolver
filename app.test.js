@@ -152,4 +152,20 @@ describe("Renovate Resolver Service", () => {
     expect(logger.info).toHaveBeenCalledWith("/resolve endpoint called");
     expect(logger.debug).toHaveBeenCalled();
   });
+
+  it("should fail on resolving a local Renovate config", async () => {
+    const localConfig = {
+      extends: ["local>ci/renovate.json"],
+    };
+    const res = await request(app)
+      .post("/resolve")
+      .set("Content-Type", "application/json")
+      .send(localConfig);
+    expect(res.statusCode).toBe(500);
+
+    expect(res.body).toEqual({ error: "config-validation" });
+
+    expect(logger.info).toHaveBeenCalledWith("/resolve endpoint called");
+    expect(logger.debug).toHaveBeenCalled();
+  });
 });
