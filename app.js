@@ -2,21 +2,13 @@ import fs from "fs";
 import path from "path";
 import express from "express";
 import { resolveConfigPresets } from "renovate/dist/config/presets/index.js";
-import pino from "pino";
+import logger from "./logger.js";
 import swaggerUi from "swagger-ui-express";
 import AjvDraft04 from "ajv-draft-04";
 import addFormats from "ajv-formats";
 
 const schemaPath = path.resolve("./renovate-schema.json");
 const renovateSchema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
-
-const logger = pino({
-  level: process.env.LOG_LEVEL || "info",
-  transport: {
-    target: "pino-pretty",
-    options: { colorize: true },
-  },
-});
 
 export default async function startServer() {
   const app = express();
@@ -50,6 +42,7 @@ export default async function startServer() {
     }
     const valid = validateRenovate(req.body);
     if (!valid) {
+      logger.info("Schema validation failed", renovateSchema);
       return res.status(400).json({
         error: "Invalid Renovate config",
         details: validateRenovate.errors,
@@ -141,7 +134,6 @@ export default async function startServer() {
   app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
     logger.info(`Swagger UI: http://localhost:${PORT}/api-docs`);
-    logger.info(`OpenAPI JSON: http://localhost:${PORT}/api-docs.json`);
   });
 
   return app;

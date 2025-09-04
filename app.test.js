@@ -1,12 +1,23 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import request from "supertest";
 import startServer from "./app.js";
+
+// Mock logger module
+vi.mock("./logger.js", () => {
+  const logger = { info: vi.fn(), error: vi.fn(), debug: vi.fn() };
+  return { default: logger };
+});
+
+import logger from "./logger.js";
 
 let app;
 
 beforeAll(async () => {
-  // Wait for server to initialize
   app = await startServer();
+});
+
+beforeEach(() => {
+  vi.clearAllMocks();
 });
 
 describe("Renovate Resolver Service", () => {
@@ -14,6 +25,8 @@ describe("Renovate Resolver Service", () => {
     const res = await request(app).get("/health");
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({ status: "ok" });
+
+    expect(logger.info).toHaveBeenCalledWith("Health check requested");
   });
 
   it("should redirect from / to /api-docs/", async () => {
@@ -29,13 +42,17 @@ describe("Renovate Resolver Service", () => {
       .send();
     expect(res.statusCode).toBe(200);
     expect(res.body).toStrictEqual({});
+
+    expect(logger.info).toHaveBeenCalledWith("/resolve endpoint called");
+    expect(logger.debug).toHaveBeenCalled();
+    // Lazy compilation happens only once
+    expect(logger.info).toHaveBeenCalledWith(
+      "Renovate validator compiled lazily",
+    );
   });
 
   it("should return 400 if config violates Renovate schema", async () => {
-    const invalidSchemaConfig = {
-      extends: 123, // should be array of strings
-      invalidField: "not allowed",
-    };
+    const invalidSchemaConfig = { extends: 123, invalidField: "not allowed" };
 
     const res = await request(app)
       .post("/resolve")
@@ -51,6 +68,11 @@ describe("Renovate Resolver Service", () => {
     expect(messages).toContain(
       "must be array must be string must match exactly one schema in oneOf",
     );
+
+    expect(logger.info).toHaveBeenCalledWith(
+      "Schema validation failed",
+      expect.any(Object),
+    );
   });
 
   it("should resolve a simple Renovate config", async () => {
@@ -61,6 +83,9 @@ describe("Renovate Resolver Service", () => {
       .send(simpleConfig);
     expect(res.statusCode).toBe(200);
     expect(JSON.stringify(res.body)).not.toContain("config:base");
+
+    expect(logger.info).toHaveBeenCalledWith("/resolve endpoint called");
+    expect(logger.debug).toHaveBeenCalled();
   });
 
   it("should handle invalid preset gracefully", async () => {
@@ -71,6 +96,11 @@ describe("Renovate Resolver Service", () => {
       .send(invalidConfig);
     expect(res.statusCode).toBe(500);
     expect(res.body).toHaveProperty("error");
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.any(Error) }),
+      "Error resolving Renovate config",
+    );
   });
 
   it("should resolve GitLab hosted configs", async () => {
@@ -90,18 +120,36 @@ describe("Renovate Resolver Service", () => {
     expect(JSON.stringify(res.body)).toContain(
       "registry.gitlab.com/team-supercharge/oasg",
     );
+
+    expect(logger.info).toHaveBeenCalledWith("/resolve endpoint called");
+    expect(logger.debug).toHaveBeenCalled();
   });
 
   it("should resolve GitHub hosted configs", async () => {
-    const githubConfig = {
-      extends: ["github>nice-move/renovate-config"],
-    };
-    const res = await request(app)
+    let githubConfig = { extends: ["github>nice-move/renovate-config"] };
+    let res = await request(app)
       .post("/resolve")
       .set("Content-Type", "application/json")
       .send(githubConfig);
     expect(res.statusCode).toBe(200);
     expect(JSON.stringify(res.body)).not.toContain("extends");
     expect(JSON.stringify(res.body)).toContain("nice-move packages");
+
+    expect(logger.info).toHaveBeenCalledWith("/resolve endpoint called");
+    expect(logger.debug).toHaveBeenCalled();
+
+    githubConfig = {
+      $schema: "https://docs.renovatebot.com/renovate-schema.json",
+      extends: ["github>renovatebot/.github"],
+    };
+    res = await request(app)
+      .post("/resolve")
+      .set("Content-Type", "application/json")
+      .send(githubConfig);
+    expect(res.statusCode).toBe(200);
+    expect(JSON.stringify(res.body)).not.toContain("extends");
+
+    expect(logger.info).toHaveBeenCalledWith("/resolve endpoint called");
+    expect(logger.debug).toHaveBeenCalled();
   });
 });

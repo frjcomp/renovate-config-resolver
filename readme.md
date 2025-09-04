@@ -104,3 +104,7 @@ npx vitest run
 
 - [Renovate Documentation](https://docs.renovatebot.com/config-presets/)
 - [Vitest Documentation](https://vitest.dev/)
+
+Todo:
+
+- document local caveats
