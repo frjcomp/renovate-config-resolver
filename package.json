@@ -21,7 +21,7 @@
     "express": "^5.1.0",
     "express-jsdoc-swagger": "^1.8.0",
     "express-openapi-validator": "^5.5.8",
-    "pino": "^9.9.0",
+    "pino": "^9.11.0",
     "pino-pretty": "^13.1.1",
     "prettier": "^3.6.2",
     "renovate": "^41.93.2"
