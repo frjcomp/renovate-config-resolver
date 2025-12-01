@@ -27,7 +27,7 @@
     "renovate": "^41.165.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.34.0",
+    "@eslint/js": "^9.39.1",
     "@eslint/json": "^0.13.2",
     "@eslint/markdown": "^7.5.0",
     "@jest/globals": "^30.2.0",
