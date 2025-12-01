@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import startServer from "./app.js";
+import { createApp, startServer } from "./app.js";
 
 try {
-  await startServer();
+  const app = createApp();
+  startServer(app);
 } catch (err) {
   console.error("Failed to start server:", err);
   process.exit(1);

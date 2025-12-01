@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import request from "supertest";
-import startServer from "./app.js";
+import { createApp } from "./app.js";
 
 let app;
 
-beforeAll(async () => {
-  // Wait for server to initialize
-  app = await startServer();
+beforeAll(() => {
+  // Create app instance without starting a server
+  app = createApp();
 });
 
 describe("Renovate Resolver Service", () => {
