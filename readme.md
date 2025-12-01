@@ -11,11 +11,9 @@ Run it locally using Docker
 ```bash
 docker run -p 3000:3000 jfrcomp/renovate-config-resolver:latest
 ```
-
-Demo environment: https://juicy-marleen-frjcomp-ec77f95d.koyeb.app/resolve
-
+And test it:
 ```bash
-curl -X POST https://juicy-marleen-frjcomp-ec77f95d.koyeb.app/resolve   -H "Content-Type: application/json"   -d '{"extends":["config:base"]}'
+curl -X POST http://localhost:3000/resolve   -H "Content-Type: application/json"   -d '{"extends":["config:base"]}'
 ```
 
 ## API Endpoints
