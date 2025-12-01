@@ -4,7 +4,7 @@ import express from "express";
 import { resolveConfigPresets } from "renovate/dist/config/presets/index.js";
 import pino from "pino";
 import swaggerUi from "swagger-ui-express";
-import AjvDraft04 from "ajv-draft-04";
+import Ajv from "ajv";
 import addFormats from "ajv-formats";
 
 const schemaPath = path.resolve("./renovate-schema.json");
@@ -37,9 +37,9 @@ export default async function startServer() {
   }
 
   // -----------------------
-  // AJV Draft-04 Validator (lazy compilation)
+  // AJV Draft-07 Validator (lazy compilation)
   // -----------------------
-  const ajv = new AjvDraft04({ strict: false });
+  const ajv = new Ajv({ strict: false, allErrors: true });
   addFormats(ajv);
   let validateRenovate;
 
