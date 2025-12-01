@@ -18,7 +18,7 @@ const logger = pino({
   },
 });
 
-export default async function startServer() {
+export function createApp() {
   const app = express();
 
   // Limit request body to prevent OOM
@@ -137,12 +137,14 @@ export default async function startServer() {
     next();
   });
 
+  return app;
+}
+
+export function startServer(app) {
   const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
+  return app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
     logger.info(`Swagger UI: http://localhost:${PORT}/api-docs`);
     logger.info(`OpenAPI JSON: http://localhost:${PORT}/api-docs.json`);
   });
-
-  return app;
 }
